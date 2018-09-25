@@ -5,8 +5,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="d3.flameGraph.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="d3-flamegraph.css">
 
     <style>
 
@@ -69,58 +69,34 @@
       </div>
     </div>
 
-    <script type="text/javascript" src="d3/d3.js"></script>
-    <script type="text/javascript" src="d3-tip/index.js"></script>
-    <script type="text/javascript" src="lodash/lodash.js"></script>
-    <script type="text/javascript" src="d3.flameGraph.js"></script>
+    <!-- D3.js -->
+    <script src="https://d3js.org/d3.v4.min.js" charset="utf-8"></script>
+    
+    <!-- d3-tip -->
+    <script type="text/javascript" src=https://cdnjs.cloudflare.com/ajax/libs/d3-tip/0.9.1/d3-tip.min.js></script>
+
+    <!-- d3-flamegraph -->
+    <script type="text/javascript" src="d3-flamegraph.js"></script>
 
     <script type="text/javascript">
-    var flameGraph = d3.flameGraph()
-      .height(1080)
+    var flameGraph = d3.flamegraph()
       .width(960)
       .cellHeight(18)
-      .transitionDuration(0)
-      .transitionEase('cubic-in-out')
+      .transitionDuration(750)
+      .minFrameSize(0)
+      .transitionEase(d3.easeCubic)
       .sort(true)
-      //Example to sort in reverse order
-      //.sort(function(a,b){ return d3.descending(a.name, b.name);})
-      .title("");
+      .title("")
+      .onClick(onClick);
 
-    // Example on how to use custom tooltips using d3-tip.
-    var tip = d3.tip()
-      .direction("s")
-      .offset([8, 0])
-      .attr('class', 'd3-flame-graph-tip')
-      .html(function(d) { return "name: " + d.name + ", value: " + d.value; });
+    var details = document.getElementById("details");
+    flameGraph.setDetailsElement(details);
 
-    flameGraph.tooltip(tip);
-
-    // Example on how to use custom labels
-    // var label = function(d) {
-    //  return "name: " + d.name + ", value: " + d.value;
-    // }
-
-    // flameGraph.label(label);
-
-    var start = {
-      "name": "root",
-      "value": 1,
-      "children": []
-    }
-
-    d3.select("#chart")
-      .datum(start)
-      .call(flameGraph);
-
-    d3.json("live.json", function(error, data) {
+    d3.json("stacks.min.json", function(error, data) {
       if (error) return console.warn(error);
-      var i = 1;
-      for (var value in data) {
-        setTimeout(function(timestamp) {
-          flameGraph.merge(data[timestamp]);
-        }, 1000 * i, value);
-        i++;
-      }
+      d3.select("#chart")
+          .datum(data)
+          .call(flameGraph);
     });
 
     document.getElementById("form").addEventListener("submit", function(event){
@@ -140,6 +116,10 @@
 
     function resetZoom() {
       flameGraph.resetZoom();
+    }
+
+    function onClick(d) {
+      console.info("Clicked on " + d.data.name);
     }
     </script>
   </body>
