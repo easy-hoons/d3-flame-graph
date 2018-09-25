@@ -404,7 +404,7 @@ export default function () {
 
       g.select('foreignObject')
         .attr('width', width)
-        .attr('height', function (d) { return c })
+        .attr('height', function (d) { return c + 1 })
         .select('div')
         .attr('class', 'd3-flame-graph-label')
         .style('display', function (d) { return (width(d) < 35) ? 'none' : 'block' })
@@ -417,7 +417,7 @@ export default function () {
       g.exit()
         .remove()
 
-      g.on('mouseover', function (d) {
+      g.select('foreignObject').on('mouseover', function (d) {
         if (tooltip) tip.show(d, this)
         detailsHandler(labelHandler(d))
       }).on('mouseout', function (d) {
